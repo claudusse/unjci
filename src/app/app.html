@@ -1,0 +1,16 @@
+<header class="topbar">
+  <a routerLink="/" class="brand">
+    <!-- <span class="brand-mark">U</span>
+    <span><strong>UNJCI</strong><small>Carte de membre</small></span> -->
+    <img class="brand-logo" src="/assets/images/logo.jpg" alt="Logo UNJCI" />
+  </a>
+  <nav>
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      >Adhésion</a
+    >
+    <a routerLink="/carte" routerLinkActive="active">Ma carte</a>
+    <a routerLink="/verification" routerLinkActive="active">Scanner une carte</a>
+  </nav>
+</header>
+<main><router-outlet /></main>
+<footer>Prototype UNJCI • Les données sont stockées localement dans le navigateur.</footer>

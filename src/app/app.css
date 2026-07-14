@@ -1,0 +1,32 @@
+.topbar {
+  height: 82px;
+  padding: 0 clamp(20px, 5vw, 72px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid rgba(213,225,219,.8);
+  background: rgba(255,255,255,.86);
+  backdrop-filter: blur(18px);
+}
+.brand { display: flex; align-items: center; gap: 13px; color: #12372a; text-decoration: none; }
+.brand-logo { display: block; width: auto; height: 54px; object-fit: contain; }
+.brand-mark { width: 46px; height: 46px; border-radius: 15px; display: grid; place-items: center; color: #fff; background: linear-gradient(145deg,#075a43 55%,#ef8f25); box-shadow: 0 9px 20px rgba(7,90,67,.22); font-size: 23px; font-weight: 900; }
+.brand strong, .brand small { display: block; }
+.brand strong { font-size: 16px; letter-spacing: .08em; }
+.brand small { margin-top: 2px; color: #718078; font-size: 10px; font-weight: 600; }
+.topbar nav { display: flex; gap: 5px; padding: 5px; border: 1px solid #e7ece9; border-radius: 14px; background: #f7f9f8; }
+.topbar nav a { padding: 10px 15px; border-radius: 10px; color: #5b6862; font-size: 12px; font-weight: 700; text-decoration: none; transition: .2s ease; }
+.topbar nav a.active, .topbar nav a:hover { color: #075a43; background: #fff; box-shadow: 0 4px 14px rgba(20,60,45,.08); }
+main { min-height: calc(100vh - 140px); }
+footer { padding: 24px; border-top: 1px solid #e1e8e4; color: #7c8983; text-align: center; font-size: 11px; }
+
+@media(max-width:680px) {
+  .topbar { height: auto; padding: 12px; gap: 10px; align-items: center; }
+  .brand span:last-child { display: none; }
+  .brand-logo { height: 42px; }
+  .topbar nav { width: calc(100% - 56px); overflow-x: auto; justify-content: space-between; }
+  .topbar nav a { padding: 9px 10px; white-space: nowrap; font-size: 11px; }
+}

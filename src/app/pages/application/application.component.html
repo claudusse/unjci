@@ -1,0 +1,56 @@
+<div class="page">
+  <section class="hero">
+    <span class="eyebrow">ADHÉSION NUMÉRIQUE SÉCURISÉE</span>
+    <h1>Demande de carte de membre UNJCI</h1>
+    <p>Renseignez vos informations, joignez les justificatifs et choisissez votre moyen de paiement. Une carte numérique sécurisée sera créée après validation.</p>
+  </section>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="form-shell">
+    <section class="panel"><h2>1. Informations personnelles</h2><div class="grid">
+      <label><span class="field-label">Nom <b>*</b></span><input formControlName="lastName" placeholder="Votre nom"></label>
+      <label><span class="field-label">Prénom(s) <b>*</b></span><input formControlName="firstName" placeholder="Vos prénoms"></label>
+      <label><span class="field-label">Date de naissance <b>*</b></span><input type="date" formControlName="birthDate"></label>
+      <label><span class="field-label">Lieu de naissance <b>*</b></span><input formControlName="birthPlace"></label>
+      <label class="wide"><span class="field-label">Adresse postale <b>*</b></span><textarea formControlName="postalAddress" rows="2"></textarea></label>
+      <label><span class="field-label">Téléphone <b>*</b></span><input formControlName="phone" placeholder="+225 ..."></label>
+      <label><span class="field-label">E-mail personnel <b>*</b></span><input type="email" formControlName="personalEmail"></label>
+    </div></section>
+
+    <section class="panel"><h2>2. Informations professionnelles</h2><div class="grid">
+      <label><span class="field-label">Statut professionnel <b>*</b></span><select formControlName="professionalStatus"><option value="">Sélectionner</option><option *ngFor="let item of statuses">{{item}}</option></select></label>
+      <label><span class="field-label">Média / employeur <b>*</b></span><input formControlName="employers" placeholder="Journal, chaîne, radio, site..."></label>
+      <label><span class="field-label">Fonction <b>*</b></span><select formControlName="functionTitle"><option value="">Sélectionner</option><option *ngFor="let item of functions">{{item}}</option></select></label>
+      <label><span class="field-label">N° de carte de presse <b>*</b></span><input formControlName="pressCardNumber"></label>
+      <label><span class="field-label">Date de validité <b>*</b></span><input type="date" formControlName="pressCardExpiry"></label>
+      <label>E-mail professionnel <small>(optionnel)</small><input type="email" formControlName="professionalEmail"></label>
+      <label>Téléphone professionnel <small>(optionnel)</small><input formControlName="professionalPhone"></label>
+    </div></section>
+
+    <section class="panel"><h2>3. Type de demande</h2><div class="choice-row">
+      <label class="choice"><input type="radio" formControlName="requestType" value="Première adhésion"><span>Première adhésion<small>Cotisation : 10 000 FCFA</small></span></label>
+      <label class="choice"><input type="radio" formControlName="requestType" value="Renouvellement"><span>Renouvellement<small>Cotisation : 5 000 FCFA</small></span></label>
+    </div>
+    <label *ngIf="form.value.requestType === 'Renouvellement'" class="member-field"><span class="field-label">Numéro d’adhérent actuel <b>*</b></span><input formControlName="currentMemberNumber"></label></section>
+
+    <section class="panel"><h2>4. Pièces justificatives</h2><div class="upload-grid">
+      <label class="upload"><span class="field-label">Carte de presse en cours <b>*</b></span><input type="file" accept="image/*,.pdf" (change)="fileSelected($event,'pressCardFile')"><strong>{{form.value.pressCardFile || 'Choisir un fichier'}}</strong></label>
+      <label class="upload">CV mis à jour<input type="file" accept=".pdf,.doc,.docx" (change)="fileSelected($event,'cvFile')"><strong>{{form.value.cvFile || 'Choisir un fichier'}}</strong></label>
+      <label class="upload"><span class="field-label">Photo d’identité <b>*</b></span><input type="file" accept="image/*" (change)="fileSelected($event,'photoFile')"><strong>{{form.value.photoFile || 'Choisir une photo'}}</strong></label>
+    </div></section>
+
+    <section class="panel"><h2>5. Engagement et déclaration</h2>
+      <label class="check"><input type="checkbox" formControlName="declarationAccepted"><span>Je certifie sur l’honneur l’exactitude des renseignements fournis et m’engage à respecter les statuts, le règlement intérieur et la charte de déontologie de l’association.</span></label>
+      <div class="grid signature"><label><span class="field-label">Nom servant de signature <b>*</b></span><input formControlName="signatureName"></label><label><span class="field-label">Date <b>*</b></span><input type="date" formControlName="signatureDate"></label></div>
+    </section>
+
+    <section class="panel"><h2>6. Règlement de la cotisation</h2><div class="payment-box"><div><small>Montant à régler</small><strong>{{form.value.contributionAmount | number:'1.0-0'}} FCFA</strong></div><label><span class="field-label">Mode de paiement <b>*</b></span><select formControlName="paymentMethod"><option value="">Sélectionner</option><option *ngFor="let item of payments">{{item}}</option></select></label></div></section>
+
+    <section class="panel"><h2>7. Protection des données</h2><p class="privacy">Les données collectées sont utilisées pour la gestion du fichier des membres, la production des cartes, le suivi des cotisations et l’envoi des communications de l’UNJCI.</p>
+      <label class="check"><input type="checkbox" formControlName="privacyAccepted"><span>J’ai pris connaissance de l’utilisation de mes données et j’accepte leur traitement.</span></label>
+      <label class="check"><input type="checkbox" formControlName="directoryConsent"><span>J’accepte que mes coordonnées professionnelles figurent dans l’annuaire public des membres.</span></label>
+    </section>
+
+    <div class="error" *ngIf="submitted && form.invalid">Veuillez compléter les champs obligatoires et accepter les engagements requis.</div>
+    <button class="btn btn-primary submit" [disabled]="saving">{{saving ? 'Enregistrement...' : 'Soumettre ma demande'}}</button>
+  </form>
+</div>
