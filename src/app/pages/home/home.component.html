@@ -1,0 +1,128 @@
+<div class="landing-wrapper page">
+  
+  <!-- 🌟 HERO SLIDER PREMIUM -->
+  <section class="modern-hero">
+    <div *ngFor="let slide of slides; let i = index" 
+         class="slide" 
+         [ngClass]="{'active': currentSlide === i}">
+      
+      <div class="slide-bg" [style.backgroundImage]="'url(' + slide.image + ')'"></div>
+      <div class="slide-overlay"></div>
+      
+      <div class="hero-container">
+        <!-- Effet Glassmorphism sur le contenu du hero -->
+        <div class="glass-panel">
+          <span class="badge-modern slide-up-1">{{ slide.badge }}</span>
+          <h1 class="slide-up-2">{{ slide.titre }}</h1>
+          <p class="slide-up-3">{{ slide.description }}</p>
+          
+          <div class="hero-actions slide-up-4">
+            <a routerLink="/application" class="btn-glow">S'inscrire / Adhérer</a>
+            <a routerLink="/verification" class="btn-outline-light">Vérifier une carte</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contrôles du slider (Flèches et Points) -->
+    <button class="nav-arrow left-arrow" (click)="prevSlide()">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+    </button>
+    <button class="nav-arrow right-arrow" (click)="nextSlide()">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+    </button>
+
+    <div class="slider-dots">
+      <button *ngFor="let slide of slides; let i = index" 
+              class="dot" 
+              [ngClass]="{'active': currentSlide === i}"
+              (click)="setSlide(i)">
+      </button>
+    </div>
+  </section>
+
+  <div class="landing-container">
+
+    <!-- ✅ SECTION 1 : ADHÉRER À L'UNJCI (Design Asymétrique) -->
+    <section class="adhesion-split-section fade-in">
+      <div class="split-content">
+        <div class="text-column">
+          <div class="section-tag">Adhérer à l'UNJCI</div>
+          <h2 class="modern-title">Présentation de<br><span>l'adhésion numérique</span></h2>
+          <p class="lead-text">
+            Dans le cadre de la modernisation de ses services, l'UNJCI met à votre disposition une plateforme numérique dédiée à la gestion des membres[cite: 1].
+          </p>
+          <p class="standard-text">
+            Soumettez en ligne vos demandes d'adhésion ou de renouvellement[cite: 1]. Renseignez vos informations, joignez vos pièces justificatives, et obtenez une carte numérique sécurisée intégrant un QR Code unique pour prouver votre statut professionnel[cite: 1].
+          </p>
+          <div class="action-group mt-6">
+            <a routerLink="/application" class="btn-solid-primary">Déposer ma demande d'adhésion</a>
+          </div>
+        </div>
+        
+        <div class="image-column">
+          <div class="image-wrapper">
+            <img src="https://unjci.com/assets/images/CM2.jpeg" alt="Professionnels des médias">
+            <div class="floating-stat glass-panel-small">
+              <strong>100%</strong>
+              <span>Dématérialisé et Sécurisé</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ✅ SECTION 2 : POURQUOI ADHÉRER ? -->
+    <section class="benefits-section fade-in">
+      <div class="section-header text-center">
+        <h2 class="modern-title">Pourquoi adhérer ?</h2>
+        <p class="subtitle">Découvrez la valeur ajoutée de notre réseau professionnel.</p>
+      </div>
+
+      <!-- SOUS-SECTION A : Les bénéfices -->
+      <div class="block-group">
+        <h3 class="block-title">
+          <span class="dot-accent"></span> Présentation des bénéfices d'être membre
+        </h3>
+        
+        <div class="modern-cards-grid">
+          <div class="modern-card" *ngFor="let benefice of benefices">
+            <div class="card-img" [style.backgroundImage]="'url(' + benefice.image + ')'"></div>
+            <div class="card-body">
+              <h4>{{ benefice.titre }}</h4>
+              <p>{{ benefice.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SOUS-SECTION B : Les opportunités -->
+      <div class="block-group mt-8">
+        <h3 class="block-title">
+          <span class="dot-accent"></span> Opportunités offertes aux membres
+        </h3>
+        
+        <div class="modern-cards-grid">
+          <div class="modern-card" *ngFor="let opp of opportunites">
+            <div class="card-img" [style.backgroundImage]="'url(' + opp.image + ')'"></div>
+            <div class="card-body">
+              <h4>{{ opp.titre }}</h4>
+              <p>{{ opp.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BANNIÈRE D'APPEL À L'ACTION (CTA) -->
+    <section class="modern-cta fade-in">
+      <div class="cta-bg-shapes"></div>
+      <div class="cta-content">
+        <h2>Prêt à intégrer l'Union ?</h2>
+        <p>Rejoignez vos confrères et participez au rayonnement de la profession.</p>
+        <a routerLink="/application" class="btn-glow-large">Bouton d'inscription / adhésion</a>
+      </div>
+    </section>
+
+  </div>
+</div>

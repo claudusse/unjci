@@ -1,32 +1,259 @@
-.topbar {
-  height: 82px;
-  padding: 0 clamp(20px, 5vw, 72px);
+/* =========================================
+   1. VARIABLES & GLOBAUX (Si utilisé comme CSS global)
+   ========================================= */
+:root {
+  font-family: "Manrope", system-ui, -apple-system, sans-serif;
+  color: #17241f;
+  background: #f4f7f5;
+  font-synthesis: none;
+  
+  --green-950: #062c22;
+  --green-800: #075a43;
+  --green-600: #09865f;
+  --green-100: #dcf4e9;
+  --orange: #ef8f25;
+  --ink: #17241f;
+  --muted: #65736d;
+  --line: #dce5e0;
+  --surface: rgba(255, 255, 255, 0.94);
+  --shadow: 0 18px 50px rgba(15, 55, 42, 0.09);
+}
+
+* { 
+  box-sizing: border-box; 
+}
+
+html { 
+  scroll-behavior: smooth; 
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(circle at 5% 4%, rgba(9, 134, 95, 0.08), transparent 25rem),
+    radial-gradient(circle at 95% 32%, rgba(239, 143, 37, 0.07), transparent 24rem),
+    #f4f7f5;
+}
+
+button, input, select, textarea { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+
+
+/* =========================================
+   2. ESPACEMENT PRINCIPAL
+   ========================================= */
+main {
+  /* Indispensable : repousse le contenu sous le menu flottant */
+  padding-top: 7rem; 
+  min-height: calc(100vh - 100px);
+}
+
+.page { 
+  width: min(1160px, calc(100% - 40px)); 
+  margin: 0 auto 64px; 
+}
+
+/* =========================================
+   3. HEADER PREMIUM FLOTTANT (PILL SHAPE)
+   ========================================= */
+.modern-header {
+  position: fixed; 
+  top: 1rem;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  width: 95%;
+  max-width: 1280px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  padding: 0.5rem;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08);
+  border-radius: 50px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+/* =========================================
+   ÉTAT SCROLLÉ (Le menu se colle en haut)
+   ========================================= */
+.modern-header.scrolled {
+  top: 0;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 0; /* Enlève la forme pilule */
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Petite bordure en bas */
+  background: rgba(255, 255, 255, 0.95); /* Fond un peu plus opaque */
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08);
+}
+
+/* Optionnel : On peut même réduire un peu la taille du logo au scroll */
+.modern-header.scrolled .brand-logo img {
+  height: 40px; 
+}
+
+.header-container {
+  width: 100%;
+  padding: 0 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  border-bottom: 1px solid rgba(213,225,219,.8);
-  background: rgba(255,255,255,.86);
-  backdrop-filter: blur(18px);
 }
-.brand { display: flex; align-items: center; gap: 13px; color: #12372a; text-decoration: none; }
-.brand-logo { display: block; width: auto; height: 54px; object-fit: contain; }
-.brand-mark { width: 46px; height: 46px; border-radius: 15px; display: grid; place-items: center; color: #fff; background: linear-gradient(145deg,#075a43 55%,#ef8f25); box-shadow: 0 9px 20px rgba(7,90,67,.22); font-size: 23px; font-weight: 900; }
-.brand strong, .brand small { display: block; }
-.brand strong { font-size: 16px; letter-spacing: .08em; }
-.brand small { margin-top: 2px; color: #718078; font-size: 10px; font-weight: 600; }
-.topbar nav { display: flex; gap: 5px; padding: 5px; border: 1px solid #e7ece9; border-radius: 14px; background: #f7f9f8; }
-.topbar nav a { padding: 10px 15px; border-radius: 10px; color: #5b6862; font-size: 12px; font-weight: 700; text-decoration: none; transition: .2s ease; }
-.topbar nav a.active, .topbar nav a:hover { color: #075a43; background: #fff; box-shadow: 0 4px 14px rgba(20,60,45,.08); }
-main { min-height: calc(100vh - 140px); }
-footer { padding: 24px; border-top: 1px solid #e1e8e4; color: #7c8983; text-align: center; font-size: 11px; }
 
-@media(max-width:680px) {
-  .topbar { height: auto; padding: 12px; gap: 10px; align-items: center; }
-  .brand span:last-child { display: none; }
-  .brand-logo { height: 42px; }
-  .topbar nav { width: calc(100% - 56px); overflow-x: auto; justify-content: space-between; }
-  .topbar nav a { padding: 9px 10px; white-space: nowrap; font-size: 11px; }
+/* Logo */
+.brand-logo {
+  display: flex;
+  align-items: center;
+  border-radius: 50%;
+  text-decoration: none;
+}
+
+.brand-logo img {
+  height: 48px;
+  width: auto;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+  mix-blend-mode: multiply; /* Rend le fond blanc du logo transparent */
+}
+
+.brand-logo:hover img {
+  transform: scale(1.05);
+}
+
+/* Navigation Centrale */
+.main-nav {
+  display: flex;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #475569;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.25rem 0;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--green-800);
+}
+
+/* Ligne orange animée sous le lien */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background-color: var(--orange);
+  transition: width 0.3s ease;
+  border-radius: 3px;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* =========================================
+   4. ACTIONS & BOUTONS DU HEADER
+   ========================================= */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-login {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #f8fafc;
+  color: #1e293b;
+  padding: 0.6rem 1.25rem;
+  border-radius: 30px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  text-decoration: none;
+  border: 1.5px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.btn-login:hover {
+  background-color: var(--green-800);
+  color: white;
+  border-color: var(--green-800);
+  box-shadow: 0 8px 20px rgba(7, 90, 67, 0.2);
+  transform: translateY(-2px);
+}
+
+.btn-login svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Bouton Menu Mobile (Caché par défaut) */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #1e293b;
+  padding: 0.5rem;
+}
+
+.mobile-menu-btn svg {
+  width: 28px;
+  height: 28px;
+}
+
+
+/* =========================================
+   5. FOOTER
+   ========================================= */
+.modern-footer {
+  text-align: center;
+  padding: 2rem;
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: transparent;
+  border-top: 1px solid rgba(226, 232, 240, 0.8);
+  margin-top: 2rem;
+}
+
+/* =========================================
+   6. RESPONSIVE DESIGN
+   ========================================= */
+@media (max-width: 992px) {
+  .main-nav {
+    display: none;
+  }
+  .btn-login {
+    display: none;
+  }
+  .mobile-menu-btn {
+    display: block;
+  }
+  .modern-header {
+    width: calc(100% - 2rem);
+    top: 0.5rem;
+  }
+}
+
+@media (max-width: 680px) {
+  main {
+    padding-top: 6rem;
+  }
+  .page { 
+    width: min(100% - 24px, 1160px); 
+  }
 }
