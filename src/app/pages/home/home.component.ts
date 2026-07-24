@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { NgFor, NgClass } from '@angular/common';
+import { NgFor, NgClass,CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, NgFor, NgClass],
+  imports: [RouterLink, NgFor, NgClass, CommonModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
@@ -16,7 +16,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   slides = [
     {
-      image: 'assets/images/scan8.jpg',
+      image: 'assets/images/scan1.jpg',
       badge: 'Plateforme Numérique Officielle',
       titre: 'L\'Union Nationale des Journalistes de Côte d\'Ivoire',
       description: 'Bienvenue sur la plateforme officielle de gestion et de vérification des cartes de membre de l\'UNJCI.'
@@ -28,7 +28,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       description: 'Centralisez vos informations personnelles et professionnelles. Soumettez vos demandes d\'adhésion entièrement en ligne.'
     },
     {
-      image: 'assets/images/scan1.jpg',
+      image: 'assets/images/scan3.jpg',
       badge: 'Technologie',
       titre: 'Votre carte numérique sécurisée',
       description: 'Chaque membre validé bénéficie d\'une carte dotée d\'un QR Code unique garantissant son authenticité sur le terrain.'
@@ -96,4 +96,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.stopSlider();
     this.startSlider();
   }
+  chiffresCles = [
+    { valeur: "30+", label: "Années d'existence" },
+    { valeur: "1500+", label: "Membres actifs" },
+    { valeur: "1", label: "Maison de la Presse" }
+  ];
 }

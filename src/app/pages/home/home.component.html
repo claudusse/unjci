@@ -44,74 +44,69 @@
   <div class="landing-container">
 
     <!-- ✅ SECTION 1 : ADHÉRER À L'UNJCI (Design Asymétrique) -->
-    <section class="adhesion-split-section fade-in">
-      <div class="split-content">
-        <div class="text-column">
-          <div class="section-tag">Adhérer à l'UNJCI</div>
-          <h2 class="modern-title">Présentation de<br><span>l'adhésion numérique</span></h2>
-          <p class="lead-text">
-            Dans le cadre de la modernisation de ses services, l'UNJCI met à votre disposition une plateforme numérique dédiée à la gestion des membres[cite: 1].
-          </p>
-          <p class="standard-text">
-            Soumettez en ligne vos demandes d'adhésion ou de renouvellement[cite: 1]. Renseignez vos informations, joignez vos pièces justificatives, et obtenez une carte numérique sécurisée intégrant un QR Code unique pour prouver votre statut professionnel[cite: 1].
-          </p>
-          <div class="action-group mt-6">
-            <a routerLink="/application" class="btn-solid-primary">Déposer ma demande d'adhésion</a>
-          </div>
-        </div>
-        
-        <div class="image-column">
-          <div class="image-wrapper">
-            <img src="https://unjci.com/assets/images/CM2.jpeg" alt="Professionnels des médias">
-            <div class="floating-stat glass-panel-small">
-              <strong>100%</strong>
-              <span>Dématérialisé et Sécurisé</span>
-            </div>
-          </div>
+    <!-- ✅ SECTION 1 : ADHÉRER À L'UNJCI (Design Asymétrique) -->
+<section class="adhesion-split-section fade-in">
+  <div class="split-content">
+    
+    <div class="text-column">
+      <div class="section-tag">Adhérer à l'UNJCI</div>
+      <h2 class="modern-title">Présentation de<br><span>l'adhésion numérique</span></h2>
+      
+      <p class="lead-text">
+        Dans le cadre de la modernisation de ses services, l'Union Nationale des Journalistes de Côte d'Ivoire (UNJCI) met à votre disposition une plateforme numérique innovante, entièrement dédiée à la gestion de ses membres.
+      </p>
+      
+      <p class="standard-text">
+        Soumettez en ligne, de manière fluide et intuitive, vos demandes d'adhésion ou de renouvellement. Renseignez vos informations professionnelles, téléversez vos pièces justificatives en toute sécurité, et obtenez une carte numérique de membre. Celle-ci intègre un QR Code infalsifiable permettant de prouver et de faire vérifier instantanément votre statut professionnel.
+      </p>
+      
+      <div class="action-group mt-6">
+        <a routerLink="/application" class="btn-solid-primary">Déposer ma demande d'adhésion</a>
+      </div>
+    </div>
+    
+    <div class="image-column">
+      <div class="image-wrapper">
+        <img src="./assets/images/jj.jpeg" alt="Professionnels des médias utilisant la plateforme">
+        <div class="floating-stat glass-panel-small">
+          <strong>100%</strong>
+          <span>Dématérialisé et Sécurisé</span>
         </div>
       </div>
-    </section>
+    </div>
+    
+  </div>
+</section>
 
-    <!-- ✅ SECTION 2 : POURQUOI ADHÉRER ? -->
-    <section class="benefits-section fade-in">
+    <!-- ✅ SECTION 2 : RAISONS DE REJOINDRE L'UNJCI (Style Accordéon) -->
+    <section class="benefits-accordion-section fade-in">
       <div class="section-header text-center">
-        <h2 class="modern-title">Pourquoi adhérer ?</h2>
-        <p class="subtitle">Découvrez la valeur ajoutée de notre réseau professionnel.</p>
+        <h2 class="accordion-main-title">Raisons de rejoindre l'UNJCI</h2>
       </div>
 
-      <!-- SOUS-SECTION A : Les bénéfices -->
-      <div class="block-group">
-        <h3 class="block-title">
-          <span class="dot-accent"></span> Présentation des bénéfices d'être membre
-        </h3>
-        
-        <div class="modern-cards-grid">
-          <div class="modern-card" *ngFor="let benefice of benefices">
-            <div class="card-img" [style.backgroundImage]="'url(' + benefice.image + ')'"></div>
-            <div class="card-body">
-              <h4>{{ benefice.titre }}</h4>
-              <p>{{ benefice.description }}</p>
-            </div>
+      <div class="accordion-wrapper">
+        <!-- Utilisation de la balise native <details> pour l'accordéon -->
+        <details class="custom-accordion" *ngFor="let benefice of benefices">
+          <summary class="accordion-summary">
+            <span class="accordion-title">{{ benefice.titre | uppercase }}</span>
+          </summary>
+          <div class="accordion-body">
+            <p>{{ benefice.description }}</p>
           </div>
-        </div>
+        </details>
+        
+        <!-- On peut aussi afficher les opportunités dans le même style à la suite -->
+        <details class="custom-accordion" *ngFor="let opp of opportunites">
+          <summary class="accordion-summary">
+            <span class="accordion-title">{{ opp.titre | uppercase }}</span>
+          </summary>
+          <div class="accordion-body">
+            <p>{{ opp.description }}</p>
+          </div>
+        </details>
       </div>
 
-      <!-- SOUS-SECTION B : Les opportunités -->
-      <div class="block-group mt-8">
-        <h3 class="block-title">
-          <span class="dot-accent"></span> Opportunités offertes aux membres
-        </h3>
-        
-        <div class="modern-cards-grid">
-          <div class="modern-card" *ngFor="let opp of opportunites">
-            <div class="card-img" [style.backgroundImage]="'url(' + opp.image + ')'"></div>
-            <div class="card-body">
-              <h4>{{ opp.titre }}</h4>
-              <p>{{ opp.description }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+     
     </section>
 
     <!-- BANNIÈRE D'APPEL À L'ACTION (CTA) -->
@@ -123,6 +118,41 @@
         <a routerLink="/application" class="btn-glow-large">Bouton d'inscription / adhésion</a>
       </div>
     </section>
+
+    <!-- ✅ SECTION 4 : NOTRE MISSION -->
+    <section class="mission-section fade-in">
+      <div class="mission-grid">
+        <div class="mission-text">
+          <div class="section-tag">Qui sommes-nous ?</div>
+          <h2 class="modern-title">Protéger, Rassembler et <span>Élever la profession</span></h2>
+          <p class="standard-text">
+            Depuis sa création, l'Union Nationale des Journalistes de Côte d'Ivoire s'est imposée comme le socle de la solidarité confraternelle. 
+          </p>
+          <p class="standard-text mt-4">
+            Nous œuvrons au quotidien pour l'amélioration des conditions de vie et de travail des professionnels des médias, la défense de la liberté de la presse, et la promotion de l'excellence à travers des initiatives majeures .
+          </p>
+        </div>
+        <div class="mission-visual">
+          <div class="experience-badge">
+            <span class="exp-number">35</span>
+            <span class="exp-text">Ans<br>d'engagement</span>
+          </div>
+          <img src="./assets/images/logo.jpg" alt="Emblème UNJCI" class="mission-img-placeholder">
+        </div>
+      </div>
+    </section>
+
+    <!-- ✅ SECTION 5 : CHIFFRES CLÉS -->
+    <section class="stats-section fade-in">
+      <div class="stats-container">
+        <div class="stat-item" *ngFor="let stat of chiffresCles">
+          <span class="stat-number">{{ stat.valeur }}</span>
+          <span class="stat-label">{{ stat.label }}</span>
+        </div>
+      </div>
+    </section>
+
+  
 
   </div>
 </div>

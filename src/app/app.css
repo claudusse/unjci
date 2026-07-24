@@ -1,5 +1,5 @@
 /* =========================================
-   1. VARIABLES & GLOBAUX (Si utilisé comme CSS global)
+   1. VARIABLES & GLOBAUX
    ========================================= */
 :root {
   font-family: "Manrope", system-ui, -apple-system, sans-serif;
@@ -40,12 +40,10 @@ body {
 button, input, select, textarea { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 
-
 /* =========================================
    2. ESPACEMENT PRINCIPAL
    ========================================= */
 main {
-  /* Indispensable : repousse le contenu sous le menu flottant */
   padding-top: 7rem; 
   min-height: calc(100vh - 100px);
 }
@@ -76,21 +74,18 @@ main {
   border-radius: 50px;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
-/* =========================================
-   ÉTAT SCROLLÉ (Le menu se colle en haut)
-   ========================================= */
+
 .modern-header.scrolled {
   top: 0;
   width: 100%;
   max-width: 100%;
-  border-radius: 0; /* Enlève la forme pilule */
+  border-radius: 0;
   border: none;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Petite bordure en bas */
-  background: rgba(255, 255, 255, 0.95); /* Fond un peu plus opaque */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
   box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08);
 }
 
-/* Optionnel : On peut même réduire un peu la taille du logo au scroll */
 .modern-header.scrolled .brand-logo img {
   height: 40px; 
 }
@@ -103,7 +98,6 @@ main {
   justify-content: space-between;
 }
 
-/* Logo */
 .brand-logo {
   display: flex;
   align-items: center;
@@ -116,7 +110,7 @@ main {
   width: auto;
   border-radius: 8px;
   transition: transform 0.3s ease;
-  mix-blend-mode: multiply; /* Rend le fond blanc du logo transparent */
+  mix-blend-mode: multiply;
 }
 
 .brand-logo:hover img {
@@ -145,7 +139,6 @@ main {
   color: var(--green-800);
 }
 
-/* Ligne orange animée sous le lien */
 .nav-link::after {
   content: '';
   position: absolute;
@@ -200,21 +193,10 @@ main {
   height: 18px;
 }
 
-/* Bouton Menu Mobile (Caché par défaut) */
+/* Bouton Menu Mobile (Totalement caché sur PC) */
 .mobile-menu-btn {
   display: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #1e293b;
-  padding: 0.5rem;
 }
-
-.mobile-menu-btn svg {
-  width: 28px;
-  height: 28px;
-}
-
 
 /* =========================================
    5. FOOTER
@@ -231,21 +213,79 @@ main {
 }
 
 /* =========================================
-   6. RESPONSIVE DESIGN
+   6. RESPONSIVE DESIGN (Mobiles & Tablettes)
    ========================================= */
 @media (max-width: 992px) {
-  .main-nav {
-    display: none;
-  }
-  .btn-login {
-    display: none;
-  }
-  .mobile-menu-btn {
-    display: block;
-  }
   .modern-header {
     width: calc(100% - 2rem);
     top: 0.5rem;
+  }
+
+  /* Cache le bouton Espace Membre */
+  .btn-login {
+    display: none;
+  }
+
+  /* === GESTION DU BOUTON MOBILE === */
+  .mobile-menu-btn {
+    display: flex; /* Fait apparaître le bouton sur mobile */
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    z-index: 1050; /* Toujours au-dessus de la nav */
+    position: relative; 
+  }
+
+  /* Par défaut, on cache la croix */
+  .icon-close {
+    display: none;
+  }
+
+  /* Quand le menu est ouvert, on cache le hamburger et on montre la croix */
+  .mobile-menu-btn.is-open .icon-menu {
+    display: none;
+  }
+  .mobile-menu-btn.is-open .icon-close {
+    display: block;
+  }
+
+  /* === GESTION DU PANNEAU DE NAVIGATION === */
+  .main-nav {
+    position: absolute;
+    top: 100%;
+    left: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    flex-direction: column;
+    padding: 2rem;
+    gap: 1.5rem;
+    
+    /* Animation (caché par défaut) */
+    transform: translateY(-20px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 1000;
+  }
+
+  /* Quand la nav a la classe .active */
+  .main-nav.active {
+    transform: translateY(10px);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modern-header.scrolled .main-nav {
+    left: 0;
+    right: 0;
+    border-radius: 0 0 20px 20px;
   }
 }
 
