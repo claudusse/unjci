@@ -1,0 +1,49 @@
+<div class="admin-page">
+  <header class="admin-header">
+    <div><span>ADMINISTRATION UNJCI</span><h1>Gestion des adhérents</h1><p>Pilotez les demandes et le statut des cartes membres.</p></div>
+    <div class="header-actions"><a routerLink="/verification">Scanner une carte</a><button (click)="logout()">Déconnexion</button></div>
+  </header>
+
+  <section class="metrics">
+    <article><small>Total adhérents</small><strong>{{ members.length }}</strong><span>Registre complet</span></article>
+    <article><small>Actifs</small><strong>{{ count('ACTIVE') }}</strong><span class="green">Cartes valides</span></article>
+    <article><small>En attente</small><strong>{{ count('EN_ATTENTE') }}</strong><span class="orange">À examiner</span></article>
+    <article><small>Suspendus</small><strong>{{ count('SUSPENDUE') }}</strong><span>Accès limités</span></article>
+  </section>
+
+  <section class="members-card">
+    <div class="card-heading">
+      <div><span>REGISTRE</span><h2>Liste des adhérents</h2></div>
+      <div class="filters">
+        <input [(ngModel)]="search" placeholder="Rechercher un adhérent..." />
+        <select [(ngModel)]="statusFilter">
+          <option value="">Tous les statuts</option>
+          <option value="EN_ATTENTE">En attente</option>
+          <option value="ACTIVE">Actif</option>
+          <option value="SUSPENDUE">Suspendu</option>
+          <option value="RESILIEE">Résilié</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="table-wrap" *ngIf="filteredMembers.length; else empty">
+      <table>
+        <thead><tr><th>Adhérent</th><th>N° membre</th><th>Demande</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let member of filteredMembers">
+            <td><div class="member-cell"><div class="avatar"><img *ngIf="member.photoDataUrl" [src]="member.photoDataUrl" alt="" /><span *ngIf="!member.photoDataUrl">{{member.firstName[0]}}{{member.lastName[0]}}</span></div><div><strong>{{member.lastName | uppercase}} {{member.firstName}}</strong><small>{{member.personalEmail}}</small></div></div></td>
+            <td><code>{{ member.memberNumber }}</code></td>
+            <td>{{ member.requestType }}<small>{{ member.createdAt | date:'dd/MM/yyyy' }}</small></td>
+            <td><span class="status" [attr.data-status]="member.status">{{ member.status }}</span></td>
+            <td><div class="actions">
+              <button class="validate" (click)="setStatus(member, 'ACTIVE')" [disabled]="member.status === 'ACTIVE'">Valider</button>
+              <button class="suspend" (click)="setStatus(member, 'SUSPENDUE')" [disabled]="member.status === 'SUSPENDUE'">Suspendre</button>
+              <button class="terminate" (click)="setStatus(member, 'RESILIEE')" [disabled]="member.status === 'RESILIEE'">Résilier</button>
+            </div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ng-template #empty><div class="empty"><h3>Aucun adhérent trouvé</h3><p>Modifiez les filtres ou enregistrez une première demande.</p></div></ng-template>
+  </section>
+</div>

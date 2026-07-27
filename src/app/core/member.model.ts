@@ -1,5 +1,12 @@
 export type RequestType = 'Première adhésion' | 'Renouvellement';
-export type MemberStatus = 'EN_ATTENTE' | 'ACTIVE' | 'SUSPENDUE' | 'EXPIREE';
+export type MemberStatus = 'EN_ATTENTE' | 'ACTIVE' | 'SUSPENDUE' | 'EXPIREE' | 'RESILIEE';
+
+export interface MembershipHistory {
+  date: string;
+  label: string;
+  amount: number;
+  status: MemberStatus;
+}
 
 export interface MemberApplication {
   id: string;

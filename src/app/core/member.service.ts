@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { MemberApplication } from './member.model';
+import { MemberApplication, MemberStatus } from './member.model';
 
 @Injectable({ providedIn: 'root' })
 export class MemberService {
@@ -34,10 +34,26 @@ export class MemberService {
   }
 
   activate(id: string): MemberApplication | undefined {
+    return this.updateStatus(id, 'ACTIVE');
+  }
+
+  updateStatus(id: string, status: MemberStatus): MemberApplication | undefined {
     const members = this.getAll();
     const member = members.find(item => item.id === id);
     if (!member) return undefined;
-    member.status = 'ACTIVE';
+    member.status = status;
+    localStorage.setItem(this.key, JSON.stringify(members));
+    return member;
+  }
+
+  updateProfile(
+    id: string,
+    changes: Partial<Pick<MemberApplication, 'phone' | 'personalEmail' | 'postalAddress' | 'employers' | 'functionTitle'>>
+  ): MemberApplication | undefined {
+    const members = this.getAll();
+    const member = members.find(item => item.id === id);
+    if (!member) return undefined;
+    Object.assign(member, changes);
     localStorage.setItem(this.key, JSON.stringify(members));
     return member;
   }
