@@ -8,6 +8,21 @@
     <button class="logout" type="button" (click)="logout()">Déconnexion</button>
   </header>
 
+  <nav *ngIf="member" class="member-menu" aria-label="Menu de l’espace membre">
+    <button type="button" (click)="scrollToSection('ma-carte')">
+      <span class="menu-icon" aria-hidden="true">▣</span>
+      <span>Ma carte</span>
+    </button>
+    <button type="button" (click)="openProfile()">
+      <span class="menu-icon" aria-hidden="true">✎</span>
+      <span>Modifier mon profil</span>
+    </button>
+    <button type="button" (click)="scrollToSection('historique')">
+      <span class="menu-icon" aria-hidden="true">↻</span>
+      <span>Historique d’abonnement</span>
+    </button>
+  </nav>
+
   <div *ngIf="member; else noMember" class="dashboard-grid">
     <section class="member-summary">
       <div class="profile-head">
@@ -22,21 +37,9 @@
         </div>
       </div>
 
-      <nav class="quick-links">
-        <a routerLink="/carte">
-          <span class="icon">▣</span>
-          <span><strong>Ma carte numérique</strong><small>Afficher et imprimer ma carte</small></span>
-          <b>→</b>
-        </a>
-        <a routerLink="/verification">
-          <span class="icon">⌗</span>
-          <span><strong>Vérifier une carte</strong><small>Accéder au lecteur QR</small></span>
-          <b>→</b>
-        </a>
-      </nav>
     </section>
 
-    <section class="content-card profile-card">
+    <section id="profil" class="content-card profile-card">
       <div class="section-head">
         <div>
           <span class="section-label">MES INFORMATIONS</span>
@@ -77,7 +80,53 @@
       </form>
     </section>
 
-    <section class="content-card history-card">
+    <section id="paiement" class="content-card payment-proof-card">
+      <div class="section-head">
+        <div>
+          <span class="section-label">COTISATION</span>
+          <h2>Justificatif de paiement</h2>
+        </div>
+        <button
+          *ngIf="!addingPaymentProof"
+          type="button"
+          class="outline-button"
+          (click)="addingPaymentProof = true"
+        >
+          {{ member.paymentPhone && member.transactionId ? 'Modifier' : 'Ajouter le justificatif de paiement' }}
+        </button>
+      </div>
+
+      <div *ngIf="paymentSaved" class="success-message">
+        Votre justificatif de paiement a été enregistré.
+      </div>
+
+      <div *ngIf="!addingPaymentProof && member.paymentPhone && member.transactionId" class="proof-summary">
+        <div><span>Numéro de paiement</span><strong>{{ member.paymentPhone }}</strong></div>
+        <div><span>ID de transaction</span><strong>{{ member.transactionId }}</strong></div>
+      </div>
+
+      <div *ngIf="!addingPaymentProof && (!member.paymentPhone || !member.transactionId)" class="proof-missing">
+        <strong>Aucun justificatif ajouté</strong>
+        <p>Ajoutez le numéro utilisé avec Wave et l’ID reçu après votre transaction.</p>
+      </div>
+
+      <form *ngIf="addingPaymentProof" [formGroup]="paymentProofForm" (ngSubmit)="savePaymentProof()">
+        <label>
+          Numéro utilisé pour le paiement
+          <input formControlName="paymentPhone" placeholder="+225 00 00 00 00 00" />
+        </label>
+        <label>
+          ID de la transaction
+          <input formControlName="transactionId" placeholder="Ex. TXN-123456789" />
+        </label>
+        <div class="form-actions wide">
+          <button type="button" class="cancel-button" (click)="addingPaymentProof = false">Annuler</button>
+          <button type="submit" class="primary-button">Enregistrer le justificatif</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="historique" class="content-card history-card">
       <div class="section-head">
         <div>
           <span class="section-label">COTISATIONS</span>
@@ -95,6 +144,10 @@
       </div>
     </section>
   </div>
+
+  <!-- <section *ngIf="member" id="ma-carte" class="member-card-section">
+    <app-card-page></app-card-page>
+  </section> -->
 
   <ng-template #noMember>
     <section class="empty-state">

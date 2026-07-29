@@ -25,18 +25,40 @@ small { color: #7a8982; font-weight: 500; }
 .upload:hover { border-color: var(--green-600); background: #eaf8f2; transform: translateY(-2px); }
 .upload input { display: none; }
 .upload strong { margin-top: 8px; color: var(--green-800); font-size: 11px; word-break: break-word; }
+.photo-upload { min-height:170px; }
+.image-recommendation { max-width:240px;margin:7px auto 0;color:#5f7168;font-size:11px;line-height:1.5;font-weight:600; }
 .check { display: flex; align-items: flex-start; gap: 12px; color: #52615a; line-height: 1.6; font-weight: 500; cursor: pointer; }
 .check + .check { margin-top: 12px; }
 .check input { flex: 0 0 18px; width: 18px; height: 18px; margin: 2px 0 0; padding: 0; accent-color: var(--green-600); cursor: pointer; }
 .signature { margin-top: 20px; }
+.section-intro { margin: -10px 0 22px; color: #617169; font-size: 13px; line-height: 1.65; }
+.credentials-panel { background: linear-gradient(145deg,rgba(255,255,255,.94),rgba(239,250,245,.94)); }
+.credentials-panel .wide { max-width: 560px; }
+.field-error { color: #c92a2a; font-size: 11px; font-weight: 700; }
+.password-field { position:relative; }
+.password-field input { padding-right:88px !important; }
+.password-field button { position:absolute;top:50%;right:12px;transform:translateY(-50%);padding:6px;border:0;color:var(--green-800);background:transparent;font-size:11px;font-weight:800;cursor:pointer; }
+.password-field:focus-within input { border-color:var(--green-600);background:#fff;box-shadow:0 0 0 4px rgba(9,134,95,.1); }
 .payment-box { display: grid; grid-template-columns: 1fr 1fr; align-items: end; gap: 30px; }
 .payment-box>div { padding: 20px; border: 1px solid #d7eee4; border-radius: 16px; background: linear-gradient(135deg,#effaf5,#f9fcfa); }
 .payment-box strong, .payment-box small { display: block; }
 .payment-box strong { margin-top: 5px; color: var(--green-800); font-size: 28px; letter-spacing: -.04em; }
 .privacy { padding: 16px; border-left: 3px solid var(--orange); border-radius: 0 12px 12px 0; color: #617169; background: #f7f9f8; line-height: 1.65; }
 .error { padding: 14px; border: 1px solid #ffd0d0; border-radius: 12px; color: #c92a2a; background: #fff0f0; font-size: 13px; font-weight: 700; }
+.form-alert { margin-top:18px;scroll-margin-top:120px; }
+.form-shell .ng-invalid.ng-touched:not(form) { border-color:#d92d20 !important;box-shadow:0 0 0 3px rgba(217,45,32,.08); }
 .submit { width: 100%; min-height: 56px; font-size: 14px; }
 .submit:disabled { opacity: .6; }
+.payment-modal-backdrop { position:fixed;inset:0;z-index:2000;padding:20px;display:grid;place-items:center;background:rgba(4,28,21,.72);backdrop-filter:blur(8px); }
+.payment-modal { width:min(100%,540px);max-height:calc(100vh - 40px);overflow:auto;padding:clamp(28px,5vw,42px);border-radius:26px;background:#fff;box-shadow:0 30px 80px rgba(0,0,0,.3); }
+.payment-mark { width:52px;height:52px;margin-bottom:18px;display:grid;place-items:center;border-radius:50%;color:#fff;background:#1dc8ff;font-size:24px;font-weight:900; }
+.payment-modal h2 { margin:10px 0 12px;color:#12372a;font-size:clamp(24px,4vw,32px);line-height:1.2; }
+.payment-modal>p { margin:0 0 24px;color:#617169;font-size:14px;line-height:1.65; }
+.popup-warning { margin:-8px 0 20px;padding:13px 15px;border:1px solid #f0d19a;border-radius:12px;color:#7a5008;background:#fff8e8;font-size:13px;line-height:1.5; }
+.popup-warning a { display:block;margin-top:5px;color:#075a43;font-weight:800; }
+.proof-form { display:grid;gap:18px; }
+.proof-form .btn { width:100%;margin-top:4px; }
+.skip-payment { padding:10px;border:0;color:#65736d;background:transparent;font-size:13px;font-weight:700;cursor:pointer;text-decoration:underline; }
 
 @media(max-width:760px) {
   .grid, .choice-row, .upload-grid, .payment-box { grid-template-columns: 1fr; }

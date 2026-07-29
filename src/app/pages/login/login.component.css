@@ -155,6 +155,23 @@ form {
   gap: 20px;
 }
 
+.registration-success {
+  margin: -12px 0 24px;
+  padding: 15px 17px;
+  display: grid;
+  gap: 4px;
+  border: 1px solid #a9dec9;
+  border-radius: 13px;
+  color: #075a43;
+  background: #eaf8f2;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.registration-success strong {
+  font-size: 13px;
+}
+
 .role-selector {
   margin: 0;
   padding: 0;
@@ -334,6 +351,17 @@ form > label > small {
   font-weight: 800;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.authentication-error {
+  padding: 13px 15px;
+  border: 1px solid #f1b8b4;
+  border-radius: 12px;
+  color: #a52820;
+  background: #fff1f0;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
 }
 
 .submit-button:hover {

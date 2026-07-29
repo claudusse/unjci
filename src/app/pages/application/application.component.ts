@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MemberService } from '../../core/member.service';
 
@@ -17,9 +17,23 @@ export class ApplicationComponent {
   private router = inject(Router);
   submitted = false;
   saving = false;
+  paymentModalOpen = false;
+  paymentSubmitted = false;
+  submissionError = '';
+  paymentPopupBlocked = false;
+  photoError = '';
+  passwordVisible = false;
+  confirmPasswordVisible = false;
+  private pendingMemberId?: string;
+  private readonly wavePaymentUrl = 'https://pay.wave.com/m/M_ci_1oLobZU1c7N5/c/ci/';
   readonly statuses = ['Journaliste mensualisé (CDI/CDD)', 'Pigiste', 'Indépendant / Freelance', 'Photojournaliste', 'Journaliste honoraire / Retraité'];
   readonly functions = ['Rédacteur', 'Reporter', 'Présentateur', 'Secrétaire de rédaction', 'Rédacteur en chef', 'Photojournaliste', 'Autre'];
   readonly payments = ['Wave', 'MTN MoMo', 'Orange Money', 'Moov Money'];
+
+  readonly paymentProofForm = this.fb.group({
+    paymentPhone: ['', Validators.required],
+    transactionId: ['', Validators.required],
+  });
 
   form = this.fb.group({
     firstName: ['', Validators.required], lastName: ['', Validators.required],
@@ -33,9 +47,12 @@ export class ApplicationComponent {
     pressCardFile: ['', Validators.required], cvFile: [''], photoFile: ['', Validators.required], photoDataUrl: [''],
     declarationAccepted: [false, Validators.requiredTrue], signatureName: ['', Validators.required],
     signatureDate: [new Date().toISOString().slice(0,10), Validators.required],
-    contributionAmount: [10000, Validators.required], paymentMethod: ['', Validators.required],
+    contributionAmount: [10000, Validators.required], paymentMethod: ['Wave', Validators.required],
     directoryConsent: [false], privacyAccepted: [false, Validators.requiredTrue]
-  });
+    ,login: ['', [Validators.required, Validators.minLength(4), Validators.pattern(/^[a-zA-Z0-9._-]+$/)]],
+    password: ['', [Validators.required, Validators.minLength(8)]],
+    confirmPassword: ['', Validators.required]
+  }, { validators: [this.passwordsMatch] });
 
   constructor() {
     this.form.controls.requestType.valueChanges.subscribe(type => {
@@ -49,6 +66,20 @@ export class ApplicationComponent {
   fileSelected(event: Event, control: 'pressCardFile'|'cvFile'|'photoFile') {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
+
+    if (control === 'photoFile') {
+      this.photoError = '';
+      const maximumPhotoSize = 2 * 1024 * 1024;
+      if (file.size > maximumPhotoSize) {
+        this.form.controls.photoFile.setValue('');
+        this.form.controls.photoDataUrl.setValue('');
+        this.form.controls.photoFile.markAsTouched();
+        this.photoError = 'La photo dépasse 2 Mo. Choisissez une image plus légère.';
+        (event.target as HTMLInputElement).value = '';
+        return;
+      }
+    }
+
     this.form.controls[control].setValue(file.name);
     if (control === 'photoFile') {
       const reader = new FileReader();
@@ -57,12 +88,82 @@ export class ApplicationComponent {
     }
   }
 
-  submit() {
+  submit(): void {
     this.submitted = true;
-    if (this.form.invalid) { this.form.markAllAsTouched(); window.scrollTo({top: 0, behavior:'smooth'}); return; }
+    this.submissionError = '';
+    const login = this.form.controls.login.value || '';
+    if (this.members.getByLogin(login)) {
+      this.form.controls.login.setErrors({ loginTaken: true });
+    }
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      setTimeout(() => {
+        const firstInvalidField = document.querySelector<HTMLElement>(
+          '.form-shell input.ng-invalid, .form-shell select.ng-invalid, .form-shell textarea.ng-invalid',
+        );
+        firstInvalidField?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        firstInvalidField?.focus();
+      });
+      return;
+    }
+
     this.saving = true;
-    const member = this.members.save(this.form.getRawValue() as any);
-    this.members.activate(member.id); // Démo : activation automatique. À remplacer par validation back-office.
-    this.router.navigate(['/carte']);
+    const paymentWindow = window.open(
+      this.wavePaymentUrl,
+      'unjci-wave-payment',
+      'popup=yes,width=520,height=760,resizable=yes,scrollbars=yes',
+    );
+    this.paymentPopupBlocked = !paymentWindow;
+
+    try {
+      const { confirmPassword, ...application } = this.form.getRawValue();
+      const member = this.members.save(application as any);
+      this.pendingMemberId = member.id;
+      this.paymentModalOpen = true;
+    } catch {
+      paymentWindow?.close();
+      this.saving = false;
+      this.submissionError =
+        'La demande n’a pas pu être enregistrée. Vérifiez que la photo choisie n’est pas trop lourde, puis réessayez.';
+      setTimeout(() => {
+        document.getElementById('submission-error')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+      });
+    }
+  }
+
+  savePaymentProof(): void {
+    this.paymentSubmitted = true;
+    if (!this.pendingMemberId || this.paymentProofForm.invalid) {
+      this.paymentProofForm.markAllAsTouched();
+      return;
+    }
+    const proof = this.paymentProofForm.getRawValue();
+    this.members.updatePaymentProof(
+      this.pendingMemberId,
+      proof.paymentPhone || '',
+      proof.transactionId || '',
+    );
+    this.finishApplication();
+  }
+
+  skipPaymentProof(): void {
+    this.finishApplication();
+  }
+
+  private finishApplication(): void {
+    this.paymentModalOpen = false;
+    this.router.navigate(['/login'], {
+      queryParams: { inscription: 'reussie' },
+    });
+  }
+
+  private passwordsMatch(control: AbstractControl): ValidationErrors | null {
+    const password = control.get('password')?.value;
+    const confirmation = control.get('confirmPassword')?.value;
+    return password && confirmation && password !== confirmation ? { passwordsMismatch: true } : null;
   }
 }

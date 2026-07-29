@@ -1,11 +1,11 @@
 <div class="page">
-  <section class="hero compact">
+  <!-- <section class="hero compact">
     <span class="eyebrow">CARTE NUMÉRIQUE</span>
     <h1>Votre carte de membre</h1>
     <p>
       Le QR code renvoie vers la fiche officielle de vérification enregistrée dans la plateforme.
     </p>
-  </section>
+  </section> -->
   <div *ngIf="member; else empty" class="card-layout">
     <article class="member-card">
       <div class="card-head">
@@ -47,20 +47,6 @@
         ><span [class.active]="member.status === 'ACTIVE'">{{ member.status }}</span>
       </div>
     </article>
-    <aside class="panel details">
-      <span [class]="member.status === 'ACTIVE' ? 'badge badge-active' : 'badge badge-pending'">{{
-        member.status
-      }}</span>
-      <h2>Carte prête pour le contrôle</h2>
-      <p>
-        Dans ce prototype, la demande est activée automatiquement. En production, un administrateur
-        devra contrôler les pièces et valider le paiement avant l’activation.
-      </p>
-      <button class="btn btn-primary" (click)="printCard()">Imprimer la carte</button
-      ><a class="btn btn-outline" [routerLink]="['/verification', member.qrToken]"
-        >Tester la vérification</a
-      >
-    </aside>
   </div>
   <ng-template #empty
     ><section class="panel empty">

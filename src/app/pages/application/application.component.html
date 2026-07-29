@@ -5,6 +5,14 @@
     <p>Renseignez vos informations, joignez les justificatifs et choisissez votre moyen de paiement. Une carte numérique sécurisée sera créée après validation.</p>
   </section>
 
+  <div id="form-alert" class="error form-alert" *ngIf="submitted && form.invalid" role="alert">
+    Certains champs obligatoires sont incomplets ou incorrects. Le premier champ concerné a été
+    sélectionné pour vous.
+  </div>
+  <div id="submission-error" class="error form-alert" *ngIf="submissionError" role="alert">
+    {{ submissionError }}
+  </div>
+
   <form [formGroup]="form" (ngSubmit)="submit()" class="form-shell">
     <section class="panel"><h2>1. Informations personnelles</h2><div class="grid">
       <label><span class="field-label">Nom <b>*</b></span><input formControlName="lastName" placeholder="Votre nom"></label>
@@ -35,7 +43,15 @@
     <section class="panel"><h2>4. Pièces justificatives</h2><div class="upload-grid">
       <label class="upload"><span class="field-label">Carte de presse en cours <b>*</b></span><input type="file" accept="image/*,.pdf" (change)="fileSelected($event,'pressCardFile')"><strong>{{form.value.pressCardFile || 'Choisir un fichier'}}</strong></label>
       <label class="upload">CV mis à jour<input type="file" accept=".pdf,.doc,.docx" (change)="fileSelected($event,'cvFile')"><strong>{{form.value.cvFile || 'Choisir un fichier'}}</strong></label>
-      <label class="upload"><span class="field-label">Photo d’identité <b>*</b></span><input type="file" accept="image/*" (change)="fileSelected($event,'photoFile')"><strong>{{form.value.photoFile || 'Choisir une photo'}}</strong></label>
+      <label class="upload photo-upload">
+        <span class="field-label">Photo d’identité <b>*</b></span>
+        <input type="file" accept="image/jpeg,image/png" (change)="fileSelected($event,'photoFile')">
+        <strong>{{form.value.photoFile || 'Choisir une photo'}}</strong>
+        <small class="image-recommendation">
+          Recommandé : 600 × 800 px, format portrait 3:4, JPG ou PNG, 2 Mo maximum.
+        </small>
+        <small class="field-error" *ngIf="photoError">{{ photoError }}</small>
+      </label>
     </div></section>
 
     <section class="panel"><h2>5. Engagement et déclaration</h2>
@@ -43,14 +59,123 @@
       <div class="grid signature"><label><span class="field-label">Nom servant de signature <b>*</b></span><input formControlName="signatureName"></label><label><span class="field-label">Date <b>*</b></span><input type="date" formControlName="signatureDate"></label></div>
     </section>
 
-    <section class="panel"><h2>6. Règlement de la cotisation</h2><div class="payment-box"><div><small>Montant à régler</small><strong>{{form.value.contributionAmount | number:'1.0-0'}} FCFA</strong></div><label><span class="field-label">Mode de paiement <b>*</b></span><select formControlName="paymentMethod"><option value="">Sélectionner</option><option *ngFor="let item of payments">{{item}}</option></select></label></div></section>
+    <section class="panel credentials-panel">
+      <h2>6. Informations de connexion</h2>
+      <p class="section-intro">
+        Créez vos identifiants personnels. Ils vous permettront d’accéder à votre espace membre,
+        votre profil et votre carte numérique.
+      </p>
+      <div class="grid">
+        <label class="wide">
+          <span class="field-label">Login <b>*</b></span>
+          <input
+            formControlName="login"
+            autocomplete="username"
+            placeholder="Ex. kouassi.jean"
+          />
+          <small>Au moins 4 caractères : lettres, chiffres, point, tiret ou underscore.</small>
+          <small class="field-error" *ngIf="submitted && form.controls.login.hasError('required')">
+            Veuillez choisir un login.
+          </small>
+          <small class="field-error" *ngIf="submitted && form.controls.login.hasError('pattern')">
+            Le login contient des caractères non autorisés.
+          </small>
+          <small class="field-error" *ngIf="submitted && form.controls.login.hasError('loginTaken')">
+            Ce login est déjà utilisé. Veuillez en choisir un autre.
+          </small>
+        </label>
+        <label>
+          <span class="field-label">Mot de passe <b>*</b></span>
+          <div class="password-field">
+            <input
+              [type]="passwordVisible ? 'text' : 'password'"
+              formControlName="password"
+              autocomplete="new-password"
+              placeholder="8 caractères minimum"
+            />
+            <button
+              type="button"
+              (click)="passwordVisible = !passwordVisible"
+              [attr.aria-label]="passwordVisible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+            >
+              {{ passwordVisible ? 'Masquer' : 'Afficher' }}
+            </button>
+          </div>
+          <small class="field-error" *ngIf="submitted && form.controls.password.invalid">
+            Le mot de passe doit contenir au moins 8 caractères.
+          </small>
+        </label>
+        <label>
+          <span class="field-label">Confirmer le mot de passe <b>*</b></span>
+          <div class="password-field">
+            <input
+              [type]="confirmPasswordVisible ? 'text' : 'password'"
+              formControlName="confirmPassword"
+              autocomplete="new-password"
+              placeholder="Saisissez à nouveau le mot de passe"
+            />
+            <button
+              type="button"
+              (click)="confirmPasswordVisible = !confirmPasswordVisible"
+              [attr.aria-label]="confirmPasswordVisible ? 'Masquer la confirmation' : 'Afficher la confirmation'"
+            >
+              {{ confirmPasswordVisible ? 'Masquer' : 'Afficher' }}
+            </button>
+          </div>
+          <small class="field-error" *ngIf="submitted && form.hasError('passwordsMismatch')">
+            Les deux mots de passe ne correspondent pas.
+          </small>
+        </label>
+      </div>
+    </section>
 
-    <section class="panel"><h2>7. Protection des données</h2><p class="privacy">Les données collectées sont utilisées pour la gestion du fichier des membres, la production des cartes, le suivi des cotisations et l’envoi des communications de l’UNJCI.</p>
+    <section class="panel"><h2>7. Règlement de la cotisation</h2><div class="payment-box"><div><small>Montant à régler</small><strong>{{form.value.contributionAmount | number:'1.0-0'}} FCFA</strong></div><label><span class="field-label">Mode de paiement <b>*</b></span><select formControlName="paymentMethod"><option value="">Sélectionner</option><option *ngFor="let item of payments" [value]="item" [disabled]="item !== 'Wave'">{{item}}{{ item !== 'Wave' ? ' — bientôt disponible' : '' }}</option></select><small>Wave est actuellement le seul moyen de paiement disponible.</small></label></div></section>
+
+    <section class="panel"><h2>8. Protection des données</h2><p class="privacy">Les données collectées sont utilisées pour la gestion du fichier des membres, la production des cartes, le suivi des cotisations et l’envoi des communications de l’UNJCI.</p>
       <label class="check"><input type="checkbox" formControlName="privacyAccepted"><span>J’ai pris connaissance de l’utilisation de mes données et j’accepte leur traitement.</span></label>
       <label class="check"><input type="checkbox" formControlName="directoryConsent"><span>J’accepte que mes coordonnées professionnelles figurent dans l’annuaire public des membres.</span></label>
     </section>
 
     <div class="error" *ngIf="submitted && form.invalid">Veuillez compléter les champs obligatoires et accepter les engagements requis.</div>
-    <button class="btn btn-primary submit" [disabled]="saving">{{saving ? 'Enregistrement...' : 'Soumettre ma demande'}}</button>
+    <button type="submit" class="btn btn-primary submit" [disabled]="saving">{{saving ? 'Enregistrement...' : 'Soumettre ma demande'}}</button>
   </form>
+</div>
+
+<div *ngIf="paymentModalOpen" class="payment-modal-backdrop">
+  <section class="payment-modal" role="dialog" aria-modal="true" aria-labelledby="payment-title">
+    <span class="payment-mark">W</span>
+    <span class="eyebrow">JUSTIFICATIF DE PAIEMENT</span>
+    <h2 id="payment-title">Avez-vous terminé le paiement Wave ?</h2>
+    <p>
+      Le paiement s’est ouvert dans une nouvelle fenêtre. Après validation dans Wave,
+      renseignez les références reçues pour faciliter le contrôle de votre cotisation.
+    </p>
+    <div *ngIf="paymentPopupBlocked" class="popup-warning">
+      Votre navigateur a bloqué la fenêtre de paiement.
+      <a href="https://pay.wave.com/m/M_ci_1oLobZU1c7N5/c/ci/" target="_blank" rel="noopener">
+        Ouvrir le paiement Wave
+      </a>
+    </div>
+
+    <form [formGroup]="paymentProofForm" (ngSubmit)="savePaymentProof()" class="proof-form">
+      <label>
+        <span class="field-label">Numéro utilisé pour le paiement <b>*</b></span>
+        <input formControlName="paymentPhone" placeholder="+225 00 00 00 00 00" />
+        <small class="field-error" *ngIf="paymentSubmitted && paymentProofForm.controls.paymentPhone.invalid">
+          Veuillez saisir le numéro utilisé.
+        </small>
+      </label>
+      <label>
+        <span class="field-label">ID de la transaction <b>*</b></span>
+        <input formControlName="transactionId" placeholder="Ex. TXN-123456789" />
+        <small class="field-error" *ngIf="paymentSubmitted && paymentProofForm.controls.transactionId.invalid">
+          Veuillez saisir l’identifiant de transaction.
+        </small>
+      </label>
+      <button type="submit" class="btn btn-primary">Enregistrer et continuer</button>
+      <button type="button" class="skip-payment" (click)="skipPaymentProof()">
+        Ajouter le justificatif plus tard
+      </button>
+    </form>
+  </section>
 </div>

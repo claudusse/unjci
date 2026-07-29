@@ -1,7 +1,7 @@
 <div class="admin-page">
   <header class="admin-header">
     <div><span>ADMINISTRATION UNJCI</span><h1>Gestion des adhérents</h1><p>Pilotez les demandes et le statut des cartes membres.</p></div>
-    <div class="header-actions"><a routerLink="/verification">Scanner une carte</a><button (click)="logout()">Déconnexion</button></div>
+    <div class="header-actions"><button type="button" (click)="openScanner()">Scanner une carte</button><button (click)="logout()">Déconnexion</button></div>
   </header>
 
   <section class="metrics">
@@ -45,5 +45,16 @@
       </table>
     </div>
     <ng-template #empty><div class="empty"><h3>Aucun adhérent trouvé</h3><p>Modifiez les filtres ou enregistrez une première demande.</p></div></ng-template>
+  </section>
+
+  <section *ngIf="scannerVisible" id="scanner-carte" class="scanner-section">
+    <div class="scanner-heading">
+      <div>
+        <span>CONTRÔLE ADMINISTRATEUR</span>
+        <h2>Vérifier l’authenticité d’une carte</h2>
+      </div>
+      <button type="button" (click)="scannerVisible = false">Fermer</button>
+    </div>
+    <app-verify></app-verify>
   </section>
 </div>

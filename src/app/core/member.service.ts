@@ -17,6 +17,15 @@ export class MemberService {
     return this.getAll().find(member => member.qrToken === token.trim());
   }
 
+  getById(id: string): MemberApplication | undefined {
+    return this.getAll().find(member => member.id === id);
+  }
+
+  getByLogin(login: string): MemberApplication | undefined {
+    const normalizedLogin = login.trim().toLowerCase();
+    return this.getAll().find(member => member.login?.trim().toLowerCase() === normalizedLogin);
+  }
+
   save(application: Omit<MemberApplication, 'id' | 'memberNumber' | 'qrToken' | 'status' | 'createdAt'>): MemberApplication {
     const members = this.getAll();
     const sequence = String(members.length + 1).padStart(5, '0');
@@ -54,6 +63,20 @@ export class MemberService {
     const member = members.find(item => item.id === id);
     if (!member) return undefined;
     Object.assign(member, changes);
+    localStorage.setItem(this.key, JSON.stringify(members));
+    return member;
+  }
+
+  updatePaymentProof(
+    id: string,
+    paymentPhone: string,
+    transactionId: string,
+  ): MemberApplication | undefined {
+    const members = this.getAll();
+    const member = members.find(item => item.id === id);
+    if (!member) return undefined;
+    member.paymentPhone = paymentPhone.trim();
+    member.transactionId = transactionId.trim();
     localStorage.setItem(this.key, JSON.stringify(members));
     return member;
   }

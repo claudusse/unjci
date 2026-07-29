@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService, UserRole } from '../../core/auth.service';
 
 @Component({
@@ -14,6 +14,8 @@ import { AuthService, UserRole } from '../../core/auth.service';
 export class LoginComponent {
   passwordVisible = false;
   submitted = false;
+  authenticationError = false;
+  readonly registrationComplete: boolean;
 
   readonly form = new FormGroup({
     login: new FormControl('', {
@@ -34,7 +36,10 @@ export class LoginComponent {
   constructor(
     private readonly auth: AuthService,
     private readonly router: Router,
-  ) {}
+    route: ActivatedRoute,
+  ) {
+    this.registrationComplete = route.snapshot.queryParamMap.get('inscription') === 'reussie';
+  }
 
   togglePasswordVisibility(): void {
     this.passwordVisible = !this.passwordVisible;
@@ -42,6 +47,7 @@ export class LoginComponent {
 
   submit(): void {
     this.submitted = true;
+    this.authenticationError = false;
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -49,7 +55,18 @@ export class LoginComponent {
     }
 
     const role = this.form.controls.role.value;
-    this.auth.login(this.form.controls.login.value, role);
+    if (role === 'member') {
+      const session = this.auth.loginMember(
+        this.form.controls.login.value,
+        this.form.controls.password.value,
+      );
+      if (!session) {
+        this.authenticationError = true;
+        return;
+      }
+    } else {
+      this.auth.login(this.form.controls.login.value, role);
+    }
     this.router.navigate([role === 'admin' ? '/administration' : '/espace-membre']);
   }
 }

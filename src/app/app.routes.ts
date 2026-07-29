@@ -6,6 +6,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/login/login.component';
 import { MemberDashboardComponent } from './pages/member-dashboard/member-dashboard.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
+import { ContactComponent } from './pages/contact/contact.component';
 import { roleGuard } from './core/auth.guard';
 
 export const routes: Routes = [
@@ -15,7 +16,8 @@ export const routes: Routes = [
   { path: 'espace-membre', component: MemberDashboardComponent, canActivate: [roleGuard('member')] },
   { path: 'administration', component: AdminDashboardComponent, canActivate: [roleGuard('admin')] },
   { path: 'carte', component: CardComponent },
-  { path: 'verification', component: VerifyComponent },
-  { path: 'verification/:token', component: VerifyComponent },
+  { path: 'verification', component: VerifyComponent, canActivate: [roleGuard('admin')] },
+  { path: 'verification/:token', component: VerifyComponent, canActivate: [roleGuard('admin')] },
+  { path: 'nous-contacter', component: ContactComponent },
   { path: '**', redirectTo: '' }
 ];

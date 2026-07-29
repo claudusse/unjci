@@ -41,4 +41,8 @@ export interface MemberApplication {
   paymentMethod: string;
   directoryConsent: boolean;
   privacyAccepted: boolean;
+  login: string;
+  password: string;
+  paymentPhone?: string;
+  transactionId?: string;
 }

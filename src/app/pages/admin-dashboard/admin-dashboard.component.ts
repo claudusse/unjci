@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { MemberApplication, MemberStatus } from '../../core/member.model';
 import { MemberService } from '../../core/member.service';
+import { VerifyComponent } from '../verify/verify.component';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, VerifyComponent],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css',
 })
@@ -17,6 +18,7 @@ export class AdminDashboardComponent implements OnInit {
   members: MemberApplication[] = [];
   search = '';
   statusFilter = '';
+  scannerVisible = false;
 
   constructor(
     private readonly memberService: MemberService,
@@ -45,6 +47,16 @@ export class AdminDashboardComponent implements OnInit {
   setStatus(member: MemberApplication, status: MemberStatus): void {
     this.memberService.updateStatus(member.id, status);
     this.refresh();
+  }
+
+  openScanner(): void {
+    this.scannerVisible = true;
+    setTimeout(() => {
+      document.getElementById('scanner-carte')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    });
   }
 
   logout(): void {
