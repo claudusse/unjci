@@ -1,9 +1,27 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { MemberApplication, MemberStatus } from './member.model';
 
 @Injectable({ providedIn: 'root' })
 export class MemberService {
+  // 1. Injection du client HTTP pour Laravel
+  private http = inject(HttpClient);
+  private apiUrl = 'http://127.0.0.1:8000/api';
+
   private readonly key = 'unjci_members';
+
+  // =========================================================================
+  // NOUVELLE MÉTHODE LARAVEL
+  // =========================================================================
+  
+  submitApplication(formData: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/members/apply`, formData);
+  }
+
+  // =========================================================================
+  // ANCIENNES MÉTHODES LOCALSTORAGE (Conservées pour ne rien casser ailleurs)
+  // =========================================================================
 
   getAll(): MemberApplication[] {
     return JSON.parse(localStorage.getItem(this.key) || '[]');

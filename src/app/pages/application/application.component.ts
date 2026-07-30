@@ -13,27 +13,26 @@ import { MemberService } from '../../core/member.service';
 })
 export class ApplicationComponent {
   private fb = inject(FormBuilder);
-  private members = inject(MemberService);
+  private memberService = inject(MemberService);
   private router = inject(Router);
+
   submitted = false;
   saving = false;
-  paymentModalOpen = false;
-  paymentSubmitted = false;
+  selectedFiles: { [key: string]: File } = {};
+
   submissionError = '';
-  paymentPopupBlocked = false;
   photoError = '';
   passwordVisible = false;
   confirmPasswordVisible = false;
-  private pendingMemberId?: string;
-  private readonly wavePaymentUrl = 'https://pay.wave.com/m/M_ci_1oLobZU1c7N5/c/ci/';
+  
   readonly statuses = ['Journaliste mensualisé (CDI/CDD)', 'Pigiste', 'Indépendant / Freelance', 'Photojournaliste', 'Journaliste honoraire / Retraité'];
   readonly functions = ['Rédacteur', 'Reporter', 'Présentateur', 'Secrétaire de rédaction', 'Rédacteur en chef', 'Photojournaliste', 'Autre'];
+  
+  // On garde les moyens de paiement à titre informatif pour l'intention de l'utilisateur
   readonly payments = ['Wave', 'MTN MoMo', 'Orange Money', 'Moov Money'];
 
-  readonly paymentProofForm = this.fb.group({
-    paymentPhone: ['', Validators.required],
-    transactionId: ['', Validators.required],
-  });
+  currentStep: number = 1;
+  totalSteps: number = 5;
 
   form = this.fb.group({
     firstName: ['', Validators.required], lastName: ['', Validators.required],
@@ -48,8 +47,8 @@ export class ApplicationComponent {
     declarationAccepted: [false, Validators.requiredTrue], signatureName: ['', Validators.required],
     signatureDate: [new Date().toISOString().slice(0,10), Validators.required],
     contributionAmount: [10000, Validators.required], paymentMethod: ['Wave', Validators.required],
-    directoryConsent: [false], privacyAccepted: [false, Validators.requiredTrue]
-    ,login: ['', [Validators.required, Validators.minLength(4), Validators.pattern(/^[a-zA-Z0-9._-]+$/)]],
+    directoryConsent: [false], privacyAccepted: [false, Validators.requiredTrue],
+    login: ['', [Validators.required, Validators.minLength(4), Validators.pattern(/^[a-zA-Z0-9._-]+$/)]],
     password: ['', [Validators.required, Validators.minLength(8)]],
     confirmPassword: ['', Validators.required]
   }, { validators: [this.passwordsMatch] });
@@ -80,7 +79,9 @@ export class ApplicationComponent {
       }
     }
 
+    this.selectedFiles[control] = file;
     this.form.controls[control].setValue(file.name);
+
     if (control === 'photoFile') {
       const reader = new FileReader();
       reader.onload = () => this.form.controls.photoDataUrl.setValue(String(reader.result));
@@ -88,13 +89,44 @@ export class ApplicationComponent {
     }
   }
 
+  nextStep() {
+    if (this.currentStep === 1 && this.isStepInvalid(['firstName', 'lastName', 'birthDate', 'birthPlace', 'postalAddress', 'phone'])) return;
+    if (this.currentStep === 2 && this.isStepInvalid(['professionalStatus', 'employers', 'functionTitle', 'pressCardNumber', 'pressCardExpiry', 'personalEmail'])) return;
+    if (this.currentStep === 3 && this.isStepInvalid(['pressCardFile', 'photoFile'])) return;
+    if (this.currentStep === 4 && this.isStepInvalid(['login', 'password', 'confirmPassword'])) return;
+
+    if (this.currentStep < this.totalSteps) {
+      this.currentStep++;
+      this.scrollToTop();
+    }
+  }
+
+  prevStep() {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+      this.scrollToTop();
+    }
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  private isStepInvalid(fields: string[]): boolean {
+    let invalid = false;
+    for (const field of fields) {
+      const control = this.form.get(field);
+      if (control && control.invalid) {
+        control.markAsTouched();
+        invalid = true;
+      }
+    }
+    return invalid;
+  }
+
   submit(): void {
     this.submitted = true;
     this.submissionError = '';
-    const login = this.form.controls.login.value || '';
-    if (this.members.getByLogin(login)) {
-      this.form.controls.login.setErrors({ loginTaken: true });
-    }
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -109,53 +141,52 @@ export class ApplicationComponent {
     }
 
     this.saving = true;
-    const paymentWindow = window.open(
-      this.wavePaymentUrl,
-      'unjci-wave-payment',
-      'popup=yes,width=520,height=760,resizable=yes,scrollbars=yes',
-    );
-    this.paymentPopupBlocked = !paymentWindow;
 
-    try {
-      const { confirmPassword, ...application } = this.form.getRawValue();
-      const member = this.members.save(application as any);
-      this.pendingMemberId = member.id;
-      this.paymentModalOpen = true;
-    } catch {
-      paymentWindow?.close();
-      this.saving = false;
-      this.submissionError =
-        'La demande n’a pas pu être enregistrée. Vérifiez que la photo choisie n’est pas trop lourde, puis réessayez.';
-      setTimeout(() => {
-        document.getElementById('submission-error')?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
+    const formData = new FormData();
+    const rawValue = this.form.getRawValue();
+
+    Object.keys(rawValue).forEach(key => {
+      if (key !== 'pressCardFile' && key !== 'cvFile' && key !== 'photoFile' && key !== 'confirmPassword') {
+        let value = (rawValue as any)[key];
+        if (value === true) value = 1;
+        if (value === false) value = 0;
+        formData.append(key, value);
+      }
+    });
+
+    if (this.selectedFiles['pressCardFile']) formData.append('pressCardFile', this.selectedFiles['pressCardFile']);
+    if (this.selectedFiles['cvFile']) formData.append('cvFile', this.selectedFiles['cvFile']);
+    if (this.selectedFiles['photoFile']) formData.append('photoFile', this.selectedFiles['photoFile']);
+
+    this.memberService.submitApplication(formData).subscribe({
+      next: (response) => {
+        this.saving = false;
+        // Redirection directe vers le login avec le message de succès
+        this.finishApplication();
+      },
+      error: (error) => {
+        this.saving = false;
+        console.error(error);
+        if (error.error?.errors?.login) {
+          this.form.controls.login.setErrors({ loginTaken: true });
+          this.submissionError = 'Ce login est déjà utilisé.';
+        } else if (error.error?.errors?.personalEmail) {
+          this.form.controls.personalEmail.setErrors({ emailTaken: true });
+          this.submissionError = 'Cet e-mail est déjà utilisé.';
+        } else {
+          this.submissionError = 'La demande n’a pas pu être enregistrée sur le serveur.';
+        }
+        setTimeout(() => {
+          document.getElementById('submission-error')?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
         });
-      });
-    }
-  }
-
-  savePaymentProof(): void {
-    this.paymentSubmitted = true;
-    if (!this.pendingMemberId || this.paymentProofForm.invalid) {
-      this.paymentProofForm.markAllAsTouched();
-      return;
-    }
-    const proof = this.paymentProofForm.getRawValue();
-    this.members.updatePaymentProof(
-      this.pendingMemberId,
-      proof.paymentPhone || '',
-      proof.transactionId || '',
-    );
-    this.finishApplication();
-  }
-
-  skipPaymentProof(): void {
-    this.finishApplication();
+      }
+    });
   }
 
   private finishApplication(): void {
-    this.paymentModalOpen = false;
     this.router.navigate(['/login'], {
       queryParams: { inscription: 'reussie' },
     });
